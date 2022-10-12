@@ -186,10 +186,10 @@ public class RNAdManagerBannerViewManager extends ViewGroupManager<BannerAdView>
                 }
 
                 if (targetingType.equals(TargetingEnums.getEnumString(TargetingTypes.LOCATION))) {
-                    view.hasTargeting = true;
-                    ReadableMap locationObject = targetingObjects.getMap(targetingType);
-                    Location location = Targeting.getLocation(locationObject);
-                    view.setLocation(location);
+                    // view.hasTargeting = true;
+                    // ReadableMap locationObject = targetingObjects.getMap(targetingType);
+                    // Location location = Targeting.getLocation(locationObject);
+                    // view.setLocation(location);
                 }
             }
         }

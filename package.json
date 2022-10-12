@@ -1,7 +1,7 @@
 {
   "name": "@ascendeum_ads/react-native-gam-aps",
   "title": "React Native Gam Aps",
-  "version": "1.0.5",
+  "version": "1.0.8",
   "description": "A react-native component for Google Ad Manager with APS banners, interstitials and native ads.",
   "main": "index.js",
   "scripts": {
