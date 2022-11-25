@@ -7,7 +7,7 @@
 #import <React/RCTBridgeModule.h>
 #import <React/UIView+React.h>
 #import <React/RCTLog.h>
-#import <FacebookAdapter/FacebookAdapter.h>
+//#import <FacebookAdapter/FacebookAdapter.h>
 
 #include "RCTConvert+GADAdSize.h"
 #import "RNAdManagerUtils.h"
@@ -135,9 +135,9 @@ static NSString *const kAdTypeTemplate = @"template";
     GAMRequest *request = [GAMRequest request];
 
     // Facebook Audience network
-    GADFBNetworkExtras * fbExtras = [[GADFBNetworkExtras alloc] init];
-    fbExtras.nativeAdFormat = GADFBAdFormatNativeBanner;
-    [request registerAdNetworkExtras:fbExtras];
+//    GADFBNetworkExtras * fbExtras = [[GADFBNetworkExtras alloc] init];
+//    fbExtras.nativeAdFormat = GADFBAdFormatNativeBanner;
+//    [request registerAdNetworkExtras:fbExtras];
 
     GADExtras *extras = [[GADExtras alloc] init];
     if (_correlator == nil) {
@@ -172,10 +172,10 @@ static NSString *const kAdTypeTemplate = @"template";
         }
         NSDictionary *location = [_targeting objectForKey:@"location"];
         if (location != nil) {
-            CGFloat latitude = [[location objectForKey:@"latitude"] doubleValue];
-            CGFloat longitude = [[location objectForKey:@"longitude"] doubleValue];
-            CGFloat accuracy = [[location objectForKey:@"accuracy"] doubleValue];
-            [request setLocationWithLatitude:latitude longitude:longitude accuracy:accuracy];
+//            CGFloat latitude = [[location objectForKey:@"latitude"] doubleValue];
+//            CGFloat longitude = [[location objectForKey:@"longitude"] doubleValue];
+//            CGFloat accuracy = [[location objectForKey:@"accuracy"] doubleValue];
+//            [request setLocationWithLatitude:latitude longitude:longitude accuracy:accuracy];
         }
     }
 
@@ -223,7 +223,7 @@ static NSString *const kAdTypeTemplate = @"template";
     __block NSMutableArray *validAdSizes = [[NSMutableArray alloc] initWithCapacity:adSizes.count];
     [adSizes enumerateObjectsUsingBlock:^(id jsonValue, NSUInteger idx, __unused BOOL *stop) {
         GADAdSize adSize = [RCTConvert GADAdSize:jsonValue];
-        if (GADAdSizeEqualToSize(adSize, kGADAdSizeInvalid)) {
+        if (GADAdSizeEqualToSize(adSize, GADAdSizeInvalid)) {
             RCTLogWarn(@"Invalid adSize %@", jsonValue);
         } else if (![validAdSizes containsObject:NSValueFromGADAdSize(adSize)]) {
             [validAdSizes addObject:NSValueFromGADAdSize(adSize)];
@@ -335,7 +335,7 @@ static NSString *const kAdTypeTemplate = @"template";
                                    nil, @"images",
                                    nil];
 
-        NSString *socialContext = nativeAd.extraAssets[GADFBSocialContext];
+        NSString *socialContext = nativeAd.extraAssets[socialContext];
         if (socialContext != nil) {
             ad[@"socialContext"] = socialContext;
         }
@@ -389,7 +389,7 @@ static NSString *const kAdTypeTemplate = @"template";
     NSMutableArray *validAdSizes = [NSMutableArray arrayWithArray:_validAdSizes];
     if (_adSize != nil) {
         GADAdSize adSize = [RCTConvert GADAdSize:_adSize];
-        if (GADAdSizeEqualToSize(adSize, kGADAdSizeInvalid)) {
+        if (GADAdSizeEqualToSize(adSize, GADAdSizeInvalid)) {
             RCTLogWarn(@"Invalid adSize %@", _adSize);
         } else if (![validAdSizes containsObject:NSValueFromGADAdSize(adSize)]) {
             [validAdSizes addObject:NSValueFromGADAdSize(adSize)];

@@ -52,7 +52,7 @@ RCT_EXPORT_METHOD(setAdUnitID:(NSString *)adUnitID)
 
 RCT_EXPORT_METHOD(setTestDevices:(NSArray *)testDevices)
 {
-    _testDevices = RNAdManagerProcessTestDevices(testDevices, kGADSimulatorID);
+    _testDevices = RNAdManagerProcessTestDevices(testDevices, GADSimulatorID);
 }
 
 RCT_EXPORT_METHOD(setTargeting:(NSDictionary *)targeting)
@@ -96,10 +96,10 @@ RCT_EXPORT_METHOD(requestAd:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromise
             }
             NSDictionary *location = [_targeting objectForKey:@"location"];
             if (location != nil) {
-                CGFloat latitude = [[location objectForKey:@"latitude"] doubleValue];
-                CGFloat longitude = [[location objectForKey:@"longitude"] doubleValue];
-                CGFloat accuracy = [[location objectForKey:@"accuracy"] doubleValue];
-                [request setLocationWithLatitude:latitude longitude:longitude accuracy:accuracy];
+//                CGFloat latitude = [[location objectForKey:@"latitude"] doubleValue];
+//                CGFloat longitude = [[location objectForKey:@"longitude"] doubleValue];
+//                CGFloat accuracy = [[location objectForKey:@"accuracy"] doubleValue];
+//                [request setLocationWithLatitude:latitude longitude:longitude accuracy:accuracy];
             }
         }
 
