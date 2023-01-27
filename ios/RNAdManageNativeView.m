@@ -8,6 +8,7 @@
 #import <React/UIView+React.h>
 #import <React/RCTLog.h>
 //#import <FacebookAdapter/FacebookAdapter.h>
+#import <MetaAdapter/MetaAdapter.h>
 
 #include "RCTConvert+GADAdSize.h"
 #import "RNAdManagerUtils.h"
@@ -138,6 +139,10 @@ static NSString *const kAdTypeTemplate = @"template";
 //    GADFBNetworkExtras * fbExtras = [[GADFBNetworkExtras alloc] init];
 //    fbExtras.nativeAdFormat = GADFBAdFormatNativeBanner;
 //    [request registerAdNetworkExtras:fbExtras];
+    // Meta Audience network
+    GADFBNetworkExtras * fbExtras = [[GADFBNetworkExtras alloc] init];
+    fbExtras.nativeAdFormat = GADFBAdFormatNativeBanner;
+    [request registerAdNetworkExtras:fbExtras];
 
     GADExtras *extras = [[GADExtras alloc] init];
     if (_correlator == nil) {
@@ -416,11 +421,20 @@ static NSString *const kAdTypeTemplate = @"template";
                             @"width": @(self.bannerView.frame.size.width),
                             @"height": @(self.bannerView.frame.size.height) });
     }
+
     if (self.onAdLoaded) {
         self.onAdLoaded(@{
             @"type": kAdTypeBanner,
-            @"gadSize": @{@"width": @(self.bannerView.frame.size.width),
+            @"gadSize": @{@"adSize": NSStringFromGADAdSize(self.bannerView.adSize),
+                          @"width": @(self.bannerView.frame.size.width),
                           @"height": @(self.bannerView.frame.size.height)},
+            @"isFluid": GADAdSizeIsFluid(self.bannerView.adSize) ? @"true" : @"false",
+            @"measurements": @{@"adWidth": @(self.bannerView.adSize.size.width),
+                               @"adHeight": @(self.bannerView.adSize.size.height),
+                               @"width": @(self.bannerView.frame.size.width),
+                               @"height": @(self.bannerView.frame.size.height),
+                               @"left": @(self.bannerView.frame.origin.x),
+                               @"top": @(self.bannerView.frame.origin.y)},
         });
     }
 
