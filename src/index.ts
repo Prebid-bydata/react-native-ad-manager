@@ -1,4 +1,5 @@
 export { default as Interstitial } from './CTKAdManagerInterstitial';
+export { default as RewardedAds } from './CTKAdManagerRewardedAd';
 
 export { Banner } from './CTKAdManagerBanner';
 export { AdaptiveBanner } from './CTKAdManagerAdaptiveBanner';

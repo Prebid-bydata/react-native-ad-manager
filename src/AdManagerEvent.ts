@@ -22,6 +22,10 @@ export interface IAdManagerEventLoadedInterstitial extends IAdManagerEventBase {
   type: 'interstitial';
 }
 
+export interface IAdManagerEventLoadedRewardedAd extends IAdManagerEventBase {
+  type: 'rewardedads';
+}
+
 export interface IAdManagerEventLoadedBanner extends IAdManagerEventBase {
   type: 'banner';
   gadSize: {
