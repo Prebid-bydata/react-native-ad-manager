@@ -98,8 +98,8 @@ public class RNAdManagerInterstitial extends ReactContextBaseJavaModule {
 
         if (targetings.hasNextKey()) {
             for (
-                    ReadableMapKeySetIterator it = targetingObjects.keySetIterator();
-                    it.hasNextKey();
+                ReadableMapKeySetIterator it = targetingObjects.keySetIterator();
+                it.hasNextKey();
             ) {
                 String targetingType = it.nextKey();
 
@@ -156,9 +156,9 @@ public class RNAdManagerInterstitial extends ReactContextBaseJavaModule {
                 testDevicesList.add(testDevice);
             }
             RequestConfiguration requestConfiguration
-                    = new RequestConfiguration.Builder()
-                    .setTestDeviceIds(testDevicesList)
-                    .build();
+                = new RequestConfiguration.Builder()
+                .setTestDeviceIds(testDevicesList)
+                .build();
             MobileAds.setRequestConfiguration(requestConfiguration);
         }
 
@@ -196,9 +196,9 @@ public class RNAdManagerInterstitial extends ReactContextBaseJavaModule {
         if (publisherProvidedID != null) {
             adRequestBuilder.setPublisherProvidedId(publisherProvidedID);
         }
-        if (location != null) {
-            adRequestBuilder.setLocation(location);
-        }
+        // if (location != null) {
+        //     adRequestBuilder.setLocation(location);
+        // }
 
         adRequest = adRequestBuilder.build();
 
@@ -221,7 +221,9 @@ public class RNAdManagerInterstitial extends ReactContextBaseJavaModule {
                     AdManagerInterstitialAd.load(reactContext, adUnitId, adRequest, new AdManagerInterstitialAdLoadCallback() {
                         @Override
                         public void onAdLoaded(AdManagerInterstitialAd interstitialAd) {
-                            sendEvent(EVENT_AD_LOADED, null);
+                            WritableMap event = Arguments.createMap();
+                            event.putString("type", "interstitial");
+                            sendEvent(EVENT_AD_LOADED, event);
                             if (mRequestAdPromise != null) {
                                 mRequestAdPromise.resolve(null);
                                 mRequestAdPromise = null;
@@ -277,22 +279,22 @@ public class RNAdManagerInterstitial extends ReactContextBaseJavaModule {
             public void run() {
                 if (mInterstitialAd != null) {
                     mInterstitialAd.setFullScreenContentCallback(
-                            new FullScreenContentCallback() {
-                                @Override
-                                public void onAdDismissedFullScreenContent() {
+                        new FullScreenContentCallback() {
+                            @Override
+                            public void onAdDismissedFullScreenContent() {
 
-                                }
+                            }
 
-                                @Override
-                                public void onAdFailedToShowFullScreenContent(AdError adError) {
+                            @Override
+                            public void onAdFailedToShowFullScreenContent(AdError adError) {
 
-                                }
+                            }
 
-                                @Override
-                                public void onAdShowedFullScreenContent() {
-                                    mInterstitialAd = null;
-                                }
-                            });
+                            @Override
+                            public void onAdShowedFullScreenContent() {
+                                mInterstitialAd = null;
+                            }
+                        });
 
                     final Activity activity = getCurrentActivity();
                     mInterstitialAd.show(activity);
