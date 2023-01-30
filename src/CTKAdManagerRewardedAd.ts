@@ -26,11 +26,13 @@ const eventMap = {
   adFailedToLoad: 'rewardAdFailedToLoad',
   adOpened: 'rewardAdOpened',
   adClosed: 'rewardAdClosed',
+  rewardEarned: 'rewardEarned'
 };
 
 type TAdManagerRewardedEvent =
   | 'adLoaded'
   | 'adFailedToLoad'
+  | 'rewardEarned'
   | 'adOpened'
   | 'adClosed';
 
@@ -53,7 +55,13 @@ const addEventListener = (
         (error: IAdManagerEventErrorPayload) =>
           handler(createErrorFromErrorData(error))
       );
-    } else {
+    } else if(event === 'rewardEarned') {
+      listener = eventEmitter.addListener(
+        mappedEvent,
+        (error: IAdManagerEventErrorPayload) =>
+          handler(createErrorFromErrorData(error))
+      );
+    }else {
       listener = eventEmitter.addListener(mappedEvent, handler);
     }
     _subscriptions.set(handler, listener);

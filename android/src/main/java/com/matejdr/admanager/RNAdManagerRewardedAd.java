@@ -49,6 +49,7 @@ public class RNAdManagerRewardedAd extends ReactContextBaseJavaModule {
     public static final String EVENT_AD_FAILED_TO_LOAD = "rewardAdFailedToLoad";
     public static final String EVENT_AD_OPENED = "rewardAdOpened";
     public static final String EVENT_AD_CLOSED = "rewardAdClosed";
+    public static final String EVENT_REWARD = "rewardEarned";
 
     RewardedAd mRewardedAd;
     String[] testDevices;
@@ -329,6 +330,10 @@ public class RNAdManagerRewardedAd extends ReactContextBaseJavaModule {
                           int rewardAmount = rewardItem.getAmount();
                           String rewardType = rewardItem.getType();
                           Log.d(TAG, "The user earned the reward."  +rewardType);
+
+                          WritableMap event = Arguments.createMap();
+                          event.putString("message", rewardType + " - " + String.valueOf(rewardAmount));
+                          sendEvent(EVENT_REWARD, event);
                         }
                     });
                     promise.resolve(null);

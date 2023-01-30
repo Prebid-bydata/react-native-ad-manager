@@ -137,6 +137,12 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 WritableMap ad = Arguments.createMap();
                 ad.putString("type", "banner");
 
+                WritableMap gadSize = Arguments.createMap();
+                gadSize.putString("adSize", adManagerAdView.getAdSize().toString());
+                gadSize.putDouble("width", adManagerAdView.getAdSize().getWidth());
+                gadSize.putDouble("height", adManagerAdView.getAdSize().getHeight());
+                ad.putMap("gadSize", gadSize);
+
                 ad.putString("isFluid", String.valueOf(isFluid()));
 
                 WritableMap measurements = Arguments.createMap();
@@ -291,7 +297,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                         }
                     }
                     Log.d(TAG, "send targeting to ad server " + adRequestBuilder.build().getCustomTargeting());
-                    this.adManagerAdView.loadAd(adRequestBuilder.build());
+                    adManagerAdView.loadAd(adRequestBuilder.build());
                 }
             }
 
@@ -339,7 +345,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                         }
                     }
                     Log.d(TAG, "send targeting to ad server " + requestBuilder.build().getCustomTargeting());
-                    this.adManagerAdView.loadAd(requestBuilder.build());
+                    adManagerAdView.loadAd(requestBuilder.build());
                 }
             }
         });
