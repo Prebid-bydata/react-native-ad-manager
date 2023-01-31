@@ -14,7 +14,8 @@ public class RNAdManagerPackage implements ReactPackage {
         return Arrays.asList(
             new RNAdManageNativeManager(reactContext),
             new RNAdManagerInterstitial(reactContext),
-            new RNAdManagerRewardedAd(reactContext)
+            new RNAdManagerRewardedAd(reactContext),
+            new RNAdManagerRewardInterstitial(reactContext)
             
         );
     }
