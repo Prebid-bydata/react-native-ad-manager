@@ -9,7 +9,7 @@ import { LINKING_ERROR } from './Constants';
 import type { IAdManagerTargeting } from './AdManagerTypes';
 
 const CTKRewardedInterstitial = NativeModules.CTKRewardedInterstitial
-  ? NativeModules.RewardedInterstitial
+  ? NativeModules.CTKRewardedInterstitial
   : new Proxy(
       {},
       {
