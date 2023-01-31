@@ -10,15 +10,11 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import com.amazon.device.ads.AdError;
-import com.amazon.device.ads.AdRegistration;
 import com.amazon.device.ads.DTBAdCallback;
-import com.amazon.device.ads.DTBAdNetwork;
-import com.amazon.device.ads.DTBAdNetworkInfo;
 import com.amazon.device.ads.DTBAdRequest;
 import com.amazon.device.ads.DTBAdResponse;
 import com.amazon.device.ads.DTBAdSize;
 import com.amazon.device.ads.DTBAdUtil;
-import com.amazon.device.ads.MRAIDPolicy;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -40,8 +36,6 @@ import com.matejdr.admanager.utils.Targeting;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 class BannerAdView extends ReactViewGroup implements AppEventListener, LifecycleEventListener {
 
@@ -56,8 +50,11 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
     AdSize adSize;
     String adsRefresh;
     int adsCount = 0;
+    int adsRefreshInterval = 30000;
     String TAG = "adsAsc";
-
+    Handler mAdHandler =  new Handler();
+    Runnable refreshRunnable = null;
+    AdSize[] adSizesArray = null;
     // Targeting
     Boolean isBannerAdsOn = true;
     Boolean hasTargeting = false;
@@ -96,6 +93,12 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
             this.adManagerAdView.destroy();
         if (this.currentActivityContext == null)
             return;
+        refreshRunnable = new Runnable() {
+            @Override
+            public void run() {
+                makeInternalAdsRequest();
+            }
+        };
         Log.d(TAG, "createAdView:");
         this.adManagerAdView = new AdManagerAdView(currentActivityContext);
 
@@ -155,6 +158,10 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 ad.putMap("measurements", measurements);
                 adsCount = adsCount + 1;
                 sendEvent(RNAdManagerBannerViewManager.EVENT_AD_LOADED, ad);
+
+                if (adsRefresh.equals("1")) {
+                    mAdHandler.postDelayed(refreshRunnable,adsRefreshInterval);
+                }
             }
 
             @Override
@@ -240,19 +247,22 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
         if (adSizes.size() == 0) {
             adSizes.add(AdSize.BANNER);
         }
-        AdSize[] adSizesArray = adSizes.toArray(new AdSize[adSizes.size()]);
+        adSizesArray = adSizes.toArray(new AdSize[adSizes.size()]);
         this.adManagerAdView.setAdSizes(adSizesArray);
 
-        makeInternalAdsRequest(adSizesArray);
+        makeInternalAdsRequest();
     }
 
-    private void makeInternalAdsRequest(AdSize[] adSizesArray) {
-        Log.d(TAG, "makeInternalAdsRequest: " + adSizesArray);
+    private void makeInternalAdsRequest() {
+        if (!isBannerAdsOn) return;
+        if (this.currentActivityContext == null) return;
+        Log.d(TAG, "makeAdsRequest");
         loader = new DTBAdRequest();
-        loader.setSizes(new DTBAdSize(adSizesArray[0].getWidth(), adSizesArray[0].getHeight(), this.apsSlotId));
+        loader.setSizes(new DTBAdSize(adSizesArray[0].getWidth(), adSizesArray[0].getWidth(), this.apsSlotId));
         if (this.adsRefresh.equals("1")) {
-            loader.setAutoRefresh(30);
+            //loader.setAutoRefresh(30);
         }
+        loader.pauseAutoRefresh();
         loader.loadAd(new DTBAdCallback() {
             @Override
             public void onFailure(AdError adError) {
@@ -500,30 +510,36 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
 
     @Override
     public void onHostResume() {
+        Log.d(TAG, "rnResume-o");
         if (this.adManagerAdView != null) {
             if (!isBannerAdsOn) {
-                Log.d(TAG, "rnResume");
+                Log.d(TAG, "rnResume-i");
                 isBannerAdsOn = true;
                 this.adManagerAdView.resume();
+                makeInternalAdsRequest();
             }
         }
     }
 
     @Override
     public void onHostPause() {
+        Log.d(TAG, "rnPause-o");
+        isBannerAdsOn = false;
+        mAdHandler.removeCallbacks(refreshRunnable);
         if (this.adManagerAdView != null) {
-            Log.d(TAG, "rnPause");
+            Log.d(TAG, "rnPause-i");
             this.adManagerAdView.pause();
-            isBannerAdsOn = false;
         }
     }
 
     @Override
     public void onHostDestroy() {
+        Log.d(TAG, "rnDestroy-o");
         if (this.adManagerAdView != null) {
-            Log.d(TAG, "rnDestroy");
+            Log.d(TAG, "rnDestroy-i");
             this.currentActivityContext = null;
             this.adManagerAdView.destroy();
+            mAdHandler.removeCallbacks(refreshRunnable);
             this.loader.stop();
         }
     }
