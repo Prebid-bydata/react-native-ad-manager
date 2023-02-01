@@ -5,7 +5,6 @@ import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -40,7 +39,6 @@ import java.util.List;
 class BannerAdView extends ReactViewGroup implements AppEventListener, LifecycleEventListener {
 
     protected AdManagerAdView adManagerAdView;
-    protected DTBAdRequest loader;
     Activity currentActivityContext = null;
 
     String[] testDevices;
@@ -48,13 +46,11 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
     String adUnitID;
     String apsSlotId;
     AdSize adSize;
-    String adsRefresh;
-    int adsCount = 0;
-    int adsRefreshInterval = 30000;
-    String TAG = "adsAsc";
+    String adsRefresh = "0";
     Handler mAdHandler =  new Handler();
     Runnable refreshRunnable = null;
     AdSize[] adSizesArray = null;
+    String TAG = "adsAsc-v1.1.9";
     // Targeting
     Boolean isBannerAdsOn = true;
     Boolean hasTargeting = false;
@@ -65,6 +61,8 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
     String publisherProvidedID;
     Location location;
     String correlator;
+    int adsCount = 0;
+    int adsRefreshInterval = 30000;
 
     int top;
     int left;
@@ -96,7 +94,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
         refreshRunnable = new Runnable() {
             @Override
             public void run() {
-                makeInternalAdsRequest();
+                makeAdRequest();
             }
         };
         Log.d(TAG, "createAdView:");
@@ -250,18 +248,16 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
         adSizesArray = adSizes.toArray(new AdSize[adSizes.size()]);
         this.adManagerAdView.setAdSizes(adSizesArray);
 
-        makeInternalAdsRequest();
+        makeAdRequest();
     }
 
-    private void makeInternalAdsRequest() {
+    private void makeAdRequest() {
         if (!isBannerAdsOn) return;
         if (this.currentActivityContext == null) return;
         Log.d(TAG, "makeAdsRequest");
-        loader = new DTBAdRequest();
+
+        final DTBAdRequest loader = new DTBAdRequest();
         loader.setSizes(new DTBAdSize(adSizesArray[0].getWidth(), adSizesArray[0].getWidth(), this.apsSlotId));
-        if (this.adsRefresh.equals("1")) {
-            //loader.setAutoRefresh(30);
-        }
         loader.pauseAutoRefresh();
         loader.loadAd(new DTBAdCallback() {
             @Override
@@ -306,8 +302,10 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                             }
                         }
                     }
-                    Log.d(TAG, "send targeting to ad server " + adRequestBuilder.build().getCustomTargeting());
-                    adManagerAdView.loadAd(adRequestBuilder.build());
+                    Log.d(TAG, "targeting: " + adRequestBuilder.build().getCustomTargeting());
+                    if(adManagerAdView != null) {
+                        adManagerAdView.loadAd(adRequestBuilder.build());
+                    }
                 }
             }
 
@@ -354,92 +352,14 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                             }
                         }
                     }
-                    Log.d(TAG, "send targeting to ad server " + requestBuilder.build().getCustomTargeting());
-                    adManagerAdView.loadAd(requestBuilder.build());
+                    Log.d(TAG, "targeting: " + requestBuilder.build().getCustomTargeting());
+                    if(adManagerAdView != null) {
+                        adManagerAdView.loadAd(requestBuilder.build());
+                    }
                 }
             }
         });
     }
-
-    // private void requestBannerAds(DTBAdResponse dtbAdResponse,AdSize[]
-    // adSizesArray){
-    // Log.d(TAG, "requestBannerAds after auctions : "+adSizesArray);
-    // AdManagerAdRequest.Builder adRequestBuilder = null;
-    // if(dtbAdResponse != null){
-    // adRequestBuilder =
-    // DTBAdUtil.INSTANCE.createAdManagerAdRequestBuilder(dtbAdResponse);
-    // }else {
-    // adRequestBuilder = new AdManagerAdRequest.Builder();
-    // }
-    // List<String> testDevicesList = new ArrayList<>();
-    // if (testDevices != null) {
-    // for (int i = 0; i < testDevices.length; i++) {
-    // String testDevice = testDevices[i];
-    // if (testDevice == "SIMULATOR") {
-    // testDevice = AdManagerAdRequest.DEVICE_ID_EMULATOR;
-    // }
-    // testDevicesList.add(testDevice);
-    // }
-    // RequestConfiguration requestConfiguration
-    // = new RequestConfiguration.Builder()
-    // .setTestDeviceIds(testDevicesList)
-    // .build();
-    // MobileAds.setRequestConfiguration(requestConfiguration);
-    // }
-
-    // if (correlator == null) {
-    // correlator = (String) Targeting.getCorelator(adUnitID);
-    // }
-    // Bundle bundle = new Bundle();
-    // bundle.putString("correlator", correlator);
-
-    // adRequestBuilder.addNetworkExtrasBundle(AdMobAdapter.class, bundle);
-
-    // // Targeting
-    // if (hasTargeting) {
-    // if (customTargeting != null && customTargeting.length > 0) {
-    // adRequestBuilder.addCustomTargeting("refreshIteration",String.valueOf(adsCount));
-    // for (int i = 0; i < customTargeting.length; i++) {
-    // String key = customTargeting[i].key;
-    // if (!key.isEmpty()) {
-    // if (customTargeting[i].value != null && !customTargeting[i].value.isEmpty())
-    // {
-    // adRequestBuilder.addCustomTargeting(key, customTargeting[i].value);
-    // } else if (customTargeting[i].values != null &&
-    // !customTargeting[i].values.isEmpty()) {
-    // adRequestBuilder.addCustomTargeting(key, customTargeting[i].values);
-    // }
-    // }
-    // }
-    // }
-    // if (categoryExclusions != null && categoryExclusions.length > 0) {
-    // for (int i = 0; i < categoryExclusions.length; i++) {
-    // String categoryExclusion = categoryExclusions[i];
-    // if (!categoryExclusion.isEmpty()) {
-    // adRequestBuilder.addCategoryExclusion(categoryExclusion);
-    // }
-    // }
-    // }
-    // if (keywords != null && keywords.length > 0) {
-    // for (int i = 0; i < keywords.length; i++) {
-    // String keyword = keywords[i];
-    // if (!keyword.isEmpty()) {
-    // adRequestBuilder.addKeyword(keyword);
-    // }
-    // }
-    // }
-    // if (contentURL != null) {
-    // adRequestBuilder.setContentUrl(contentURL);
-    // }
-    // if (publisherProvidedID != null) {
-    // adRequestBuilder.setPublisherProvidedId(publisherProvidedID);
-    // }
-    // if (location != null) {
-    // adRequestBuilder.setLocation(location);
-    // }
-    // }
-    // this.adView.loadAd(adRequestBuilder.build());
-    // }
 
     public void setAdUnitID(String adUnitID) {
         if (this.adUnitID != null) {
@@ -516,7 +436,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 Log.d(TAG, "rnResume-i");
                 isBannerAdsOn = true;
                 this.adManagerAdView.resume();
-                makeInternalAdsRequest();
+                makeAdRequest();
             }
         }
     }
@@ -540,7 +460,6 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
             this.currentActivityContext = null;
             this.adManagerAdView.destroy();
             mAdHandler.removeCallbacks(refreshRunnable);
-            this.loader.stop();
         }
     }
 

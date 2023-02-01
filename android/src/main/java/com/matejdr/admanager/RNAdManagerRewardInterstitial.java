@@ -60,7 +60,7 @@ public class RNAdManagerRewardInterstitial extends ReactContextBaseJavaModule {
     String contentURL;
     String publisherProvidedID;
     Location location;
-    String TAG = "adsAsc";
+    String TAG = "adsAsc-v1.1.9";
 
     String adUnitId;
     AdManagerAdRequest adRequest;
