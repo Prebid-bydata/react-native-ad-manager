@@ -45,6 +45,7 @@ public class RNAdManagerBannerViewManager extends ViewGroupManager<BannerAdView>
     public static final String EVENT_APP_EVENT = "onAppEvent";
 
     public static final int COMMAND_LOAD_BANNER = 1;
+    public static final int COMMAND_UNLOAD_BANNER = 2;
     private final ReactApplicationContext applicationContext;
 
     public RNAdManagerBannerViewManager(ReactApplicationContext context) {
@@ -203,7 +204,7 @@ public class RNAdManagerBannerViewManager extends ViewGroupManager<BannerAdView>
     @Nullable
     @Override
     public Map<String, Integer> getCommandsMap() {
-        return MapBuilder.of("loadBanner", COMMAND_LOAD_BANNER);
+        return MapBuilder.of("loadBanner", COMMAND_LOAD_BANNER, "unloadBanner", COMMAND_UNLOAD_BANNER);
     }
 
     @Override
@@ -212,6 +213,9 @@ public class RNAdManagerBannerViewManager extends ViewGroupManager<BannerAdView>
             case COMMAND_LOAD_BANNER:
                 root.loadBanner();
                 break;
+            case COMMAND_UNLOAD_BANNER:
+                root.unloadBanner();
+            break;
         }
     }
 }

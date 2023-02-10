@@ -137,6 +137,19 @@ export class Banner extends React.Component<
     this.loadBanner();
   }
 
+  // Defining the componentWillUnmount method
+  componentWillUnmount() {
+    this.unloadBanner();
+  }
+
+  unloadBanner() {
+    UIManager.dispatchViewManagerCommand(
+      findNodeHandle(this),
+      UIManager.getViewManagerConfig(ComponentName).Commands.unloadBanner,
+      []
+    );
+  }
+
   loadBanner() {
     UIManager.dispatchViewManagerCommand(
       findNodeHandle(this),

@@ -50,7 +50,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
     Handler mAdHandler =  new Handler();
     Runnable refreshRunnable = null;
     AdSize[] adSizesArray = null;
-    String TAG = "adsAsc-v1.1.9";
+    String TAG = "adsAsc-v1.1.12";
     // Targeting
     Boolean isBannerAdsOn = true;
     Boolean hasTargeting = false;
@@ -227,6 +227,11 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 name,
                 event);
         Log.d(TAG, "sendEvent: " + name);
+    }
+
+    public void unloadBanner() {
+        Log.d(TAG, "unloadBanner: ");
+        mAdHandler.removeCallbacks(refreshRunnable);
     }
 
     public void loadBanner() {
